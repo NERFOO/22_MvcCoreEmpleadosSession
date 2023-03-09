@@ -1,0 +1,11 @@
+﻿
+
+<h1>Suma Salarios Session</h1>
+
+<a asp-controller="Empleados" asp-action="SessionSalarios">Volver a session salarial</a>
+
+@if(Context.Session.GetString("SUMASALARIAL") == null) {
+    <h1 style="color:red">No ha datos salariales aun</h1>
+} else {
+    <h1 style="color:green">Suma salarial actual: @Context.Session.GetString("SUMASALARIAL")</h1>
+}
