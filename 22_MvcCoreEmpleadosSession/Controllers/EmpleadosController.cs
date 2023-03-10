@@ -2,6 +2,8 @@
 using _22_MvcCoreEmpleadosSession.Models;
 using _22_MvcCoreEmpleadosSession.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.Extensions.Caching.Memory;
+using System.Collections.Generic;
 using System.Linq.Expressions;
 
 namespace _22_MvcCoreEmpleadosSession.Controllers
@@ -10,10 +12,12 @@ namespace _22_MvcCoreEmpleadosSession.Controllers
     {
 
         private RepositoryEmpleados repo;
+        private IMemoryCache memoryCache;
 
-        public EmpleadosController(RepositoryEmpleados repo)
+        public EmpleadosController(RepositoryEmpleados repo, IMemoryCache memoryCache)
         {
             this.repo = repo;
+            this.memoryCache = memoryCache;
         }
 
         public IActionResult SessionSalarios(int? salario)
@@ -86,8 +90,31 @@ namespace _22_MvcCoreEmpleadosSession.Controllers
             return View();
         }
 
-        public IActionResult EmpleadosSessionOK(int? idEmpleado)
+        //[ResponseCache(Duration = 300, Location = ResponseCacheLocation.Client)]
+        public IActionResult EmpleadosSessionOK(int? idEmpleado, int? idFavorito)
         {
+            if(idFavorito != null)
+            {
+                List<Empleado> empleadosFavoritos;
+
+                if(this.memoryCache.Get("FAVORITOS") == null)
+                {
+                    empleadosFavoritos = new List<Empleado>();
+                }
+                else
+                {
+                    empleadosFavoritos = this.memoryCache.Get<List<Empleado>>("FAVORITOS");
+                }
+
+                //BUSCAMOS AL EMPLEADO EN BBDD PARA ALMACENARLO EN CACHE
+                Empleado empleado = this.repo.FindEmpleado(idFavorito.Value);
+
+                empleadosFavoritos.Add(empleado);
+
+                //ALMACENAMOS LOS DATOS EN CACHE
+                this.memoryCache.Set("FAVORITOS", empleadosFavoritos);
+            }
+
             if(idEmpleado != null)
             {
                 List<int> idsEmpleado;
@@ -149,6 +176,11 @@ namespace _22_MvcCoreEmpleadosSession.Controllers
                 return View(empleadosSession);
             }
 
+            return View();
+        }
+
+        public IActionResult FavoritosOK()
+        {
             return View();
         }
     }

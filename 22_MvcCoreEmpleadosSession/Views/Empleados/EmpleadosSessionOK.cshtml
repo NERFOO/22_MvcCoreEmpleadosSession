@@ -2,19 +2,34 @@
 
 @{
     List<int> idsEmpleados = Context.Session.GetObject<List<int>>("IDSEMPLEADOS");
+
+    List<Empleado> favoritos = memoryCache.Get<List<Empleado>>("FAVORITOS");
 }
 
 <h1>Empleados Session OK</h1>
 
 <a asp-controller="Empleados" asp-action="EmpleadosAlmacenadosOK">Empleados Almacenados OK</a>
+<a class="nav-link text-dark" asp-area="" asp-controller="Empleados" asp-action="FavoritosOK">Favoritos OK</a>
 
-<h1 style="color:red">@ViewData["MENSAJE"]</h1>
+@if(idsEmpleados != null)
+{
+    <h1 style="color:red">Empleados en session: @idsEmpleados.Count</h1>
+}
+
+@if (favoritos != null)
+{
+    <h1 style="color:green">Empleados favoritos en cache: @favoritos.Count</h1>
+}
 
 <ul class="list-group">
     @foreach (Empleado emp in Model)
     {
             <li class="list-group-item list-group-item-danger">
                 @emp.Apellido
+
+                <a asp-controller="Empleados" asp-action="EmpleadosSessionOK" asp-route-idFavorito="@emp.IdEmpleado">
+                    <img src="~/images/img2.png" style="width: 30px" />
+                </a>
                 
                 @if(idsEmpleados == null)
                 {
