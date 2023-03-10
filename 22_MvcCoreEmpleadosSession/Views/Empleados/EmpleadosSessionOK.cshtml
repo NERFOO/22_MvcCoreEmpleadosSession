@@ -1,5 +1,9 @@
 ﻿@model List<Empleado>
 
+@{
+    List<int> idsEmpleados = Context.Session.GetObject<List<int>>("IDSEMPLEADOS");
+}
+
 <h1>Empleados Session OK</h1>
 
 <a asp-controller="Empleados" asp-action="EmpleadosAlmacenadosOK">Empleados Almacenados OK</a>
@@ -10,8 +14,23 @@
     @foreach (Empleado emp in Model)
     {
             <li class="list-group-item list-group-item-danger">
-            @emp.Apellido
-            <a asp-controller="Empleados" asp-action="EmpleadosSessionOK" asp-route-idEmpleado="@emp.IdEmpleado">Almacenar Empleado OK</a>
+                @emp.Apellido
+                
+                @if(idsEmpleados == null)
+                {
+                    <a asp-controller="Empleados" asp-action="EmpleadosSessionOK" asp-route-idEmpleado="@emp.IdEmpleado">Almacenar Empleado OK</a>
+                } else
+                {
+                    //PREGUNTAR SI EL EMPLEADO QUE ESTAMOS RECORRIENDO ESTA DENTRO DE SESSION
+                    if(idsEmpleados.Contains(emp.IdEmpleado))
+                    {
+                        <img src="~/images/img1.png" style="width: 30px"/>
+                    }
+                    else 
+                    {
+                        <a asp-controller="Empleados" asp-action="EmpleadosSessionOK" asp-route-idEmpleado="@emp.IdEmpleado">Almacenar Empleado OK</a>
+                    }
+                }
             </li>
     }
 </ul>

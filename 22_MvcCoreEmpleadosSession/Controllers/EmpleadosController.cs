@@ -2,6 +2,7 @@
 using _22_MvcCoreEmpleadosSession.Models;
 using _22_MvcCoreEmpleadosSession.Repositories;
 using Microsoft.AspNetCore.Mvc;
+using System.Linq.Expressions;
 
 namespace _22_MvcCoreEmpleadosSession.Controllers
 {
@@ -112,7 +113,7 @@ namespace _22_MvcCoreEmpleadosSession.Controllers
             return View(empleados);
         }
 
-        public IActionResult EmpleadosAlmacenadosOK()
+        public IActionResult EmpleadosAlmacenadosOK(int? idEliminar)
         {
             //RECUPERAMOS LOS DATOS DE SESSION
             List<int> idsEmpleados = HttpContext.Session.GetObject<List<int>>("IDSEMPLEADOS");
@@ -127,6 +128,22 @@ namespace _22_MvcCoreEmpleadosSession.Controllers
             }
             else
             {
+                if(idEliminar != null)
+                {
+                    //ELIMINAMOS EL ELEMENTO QUE NOS HAN SOLICITADO
+                    idsEmpleados.Remove(idEliminar.Value);
+
+                    if(idsEmpleados.Count == 0)
+                    {
+                        HttpContext.Session.Remove("IDSEMPLEADOS");
+                    }
+                    else
+                    {
+                        //DEBEMOS ACTUALIZAR DE NUEVO SESSION
+                        HttpContext.Session.SetObject("IDSEMPLEADOS", idsEmpleados);
+                    }
+                }
+
                 List<Empleado> empleadosSession = this.repo.GetEmpleadosSession(idsEmpleados);
 
                 return View(empleadosSession);

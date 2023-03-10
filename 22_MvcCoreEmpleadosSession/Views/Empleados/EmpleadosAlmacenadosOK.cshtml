@@ -3,7 +3,12 @@
 
 <h1>Empleados Almacenados Session OK</h1>
 
-<h1 style="color:red">@ViewData["MENSAJE"]</h1>
+
+@if(Context.Session.GetObject<List<int>>("IDSEMPLEADOS") == null)
+{
+    @*<h1 style="color:red">@ViewData["MENSAJE"]</h1>*@
+    <h1 style="color:red">No existen empleados en session</h1>
+}
 
 @if (Model != null)
 {
@@ -22,6 +27,9 @@
                     <td>@emp.Apellido</td>
                     <td>@emp.Oficio</td>
                     <td>@emp.Salario</td>
+                    <td>
+                        <a asp-controller="Empleados" asp-action="EmpleadosAlmacenadosOK" asp-route-idEliminar="@emp.IdEmpleado">Quitar de Session</a>
+                    </td>
                 </tr>
             }
         </tbody>
