@@ -175,8 +175,6 @@ namespace _22_MvcCoreEmpleadosSession.Controllers
 
                 return View(empleadosSession);
             }
-
-            return View();
         }
 
         public IActionResult FavoritosOK()
